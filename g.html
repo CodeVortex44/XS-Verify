@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>เชิญบอท XS Verify</title>
+<style>
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Kanit", sans-serif;
+    background: #121212;
+    color: #eee;
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 480px;
+    background: #1f1f2f;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 0 24px #4e54c8;
+  }
+
+  h2 {
+    margin: 0 0 24px;
+    text-align: center;
+  }
+
+  /* ปุ่มเชิญบอท */
+  .invite-btn {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 20px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(79, 79, 255, 0.3);
+    width: 100%;
+    text-decoration: none;
+    user-select: none;
+    transition: all 0.3s ease;
+  }
+  .invite-btn:hover {
+    background: linear-gradient(135deg, #8f94fb, #4e54c8);
+    box-shadow: 0 12px 25px rgba(79, 79, 255, 0.5);
+    transform: translateY(-4px);
+  }
+
+  /* ส่วนระบบ Auth */
+  #auth-section input,
+  #auth-section button {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 16px;
+  }
+  #auth-section button {
+    background: #4e54c8;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #auth-section button:hover {
+    background: #8f94fb;
+  }
+
+  /* แสดงข้อความสถานะ */
+  .msg {
+    text-align: center;
+    margin-bottom: 12px;
+    min-height: 24px;
+  }
+
+  /* โปรไฟล์บอท */
+  #profile-section {
+    text-align: center;
+  }
+  #profile-section img {
+    width: 140px;
+    border-radius: 50%;
+    border: 4px solid #8f94fb;
+    margin-bottom: 16px;
+  }
+  #bot-name {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+  }
+  #bot-desc {
+    font-size: 1rem;
+    color: #aaa;
+    margin-bottom: 24px;
+  }
+
+  /* ระบบให้คะแนน */
+  .rating-stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .star {
+    font-size: 2.8rem;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.25s ease;
+    user-select: none;
+  }
+  .star.hovered,
+  .star.selected {
+    color: #fbc531;
+  }
+
+  #btn-submit-rating {
+    background: #4e54c8;
+    color: white;
+    padding: 14px 0;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 20px;
+    transition: background 0.3s ease;
+  }
+  #btn-submit-rating:hover {
+    background: #8f94fb;
+  }
+
+  /* ปุ่มออกจากระบบ */
+  #btn-logout {
+    background: #e84118;
+    padding: 12px 0;
+    border: none;
+    border-radius: 12px;
+    width: 100%;
+    cursor: pointer;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  #btn-logout:hover {
+    background: #ff5c33;
+  }
+
+  /* ซ่อนส่วนที่ไม่ใช้งาน */
+  .hidden {
+    display: none;
+  }
+
+  /* รีวิวข้อความ */
+  #reviews {
+    max-height: 160px;
+    overflow-y: auto;
+    background: #29293d;
+    padding: 12px;
+    border-radius: 12px;
+    color: #ccc;
+    font-size: 0.95rem;
+  }
+  #reviews p {
+    margin: 6px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- หน้าแรก ปุ่มเชิญบอท -->
+  <div id="invite-section">
+<h2> <img src="https://img5.pic.in.th/file/secure-sv1/X-removebg-preview.png" alt="Bot Icon" style="width:100px; height:100px; vertical-align:middle; margin-right:8px;"> เชิญบอท XS Verify </h2>
+    <a href="https://discord.com/oauth2/authorize?client_id=1321783586831077376&scope=bot&permissions=8" 
+       target="_blank" rel="noopener noreferrer" class="invite-btn" id="btn-invite">
+      เชิญบอท
+    </a>
+  </div>
+
+  <!-- ระบบสมัครสมาชิกและเข้าสู่ระบบ -->
+  <div id="auth-section" class="hidden">
+    <h2>สมัครสมาชิก / เข้าสู่ระบบ</h2>
+    <input type="text" id="username" placeholder="ชื่อผู้ใช้" autocomplete="off" />
+    <input type="password" id="password" placeholder="รหัสผ่าน" autocomplete="off" />
+    <button id="btn-register">สมัครสมาชิก</button>
+    <button id="btn-login">เข้าสู่ระบบ</button>
+    <div id="auth-msg" class="msg"></div>
+  </div>
+
+  <!-- หน้าโปรไฟล์บอท + ให้คะแนน -->
+  <div id="profile-section" class="hidden">
+    <h2>โปรไฟล์บอท Discord</h2>
+    <img src="https://cdn.discordapp.com/avatars/123456789012345678/abcdef1234567890.webp?size=256" alt="Bot Avatar" />
+    <h3 id="bot-name">My Cool Bot</h3>
+    <p id="bot-desc">บอทสำหรับช่วยเหลือและความบันเทิงในเซิร์ฟเวอร์ Discord ของคุณ</p>
+    <p>คะแนนเฉลี่ย: <span id="avg-rating">0</span> / 5 จาก <span id="num-ratings">0</span> คน</p>
+
+    <h3>ให้คะแนนบอท</h3>
+    <div class="rating-stars" id="rating-stars">
+      <span class="star" data-star="1">&#9733;</span>
+      <span class="star" data-star="2">&#9733;</span>
+      <span class="star" data-star="3">&#9733;</span>
+      <span class="star" data-star="4">&#9733;</span>
+      <span class="star" data-star="5">&#9733;</span>
+    </div>
+
+    <textarea id="review-text" rows="3" placeholder="เขียนรีวิว (ไม่บังคับ)" style="width:100%; border-radius:10px; padding:10px; resize:none; font-size:1rem; margin-bottom:12px;"></textarea>
+
+    <button id="btn-submit-rating">ส่งคะแนนและรีวิว</button>
+    <div id="rating-msg" class="msg"></div>
+
+    <h3>รีวิวจากผู้ใช้</h3>
+    <div id="reviews">ยังไม่มีรีวิว</div>
+
+    <button id="btn-logout">ออกจากระบบ</button>
+  </div>
+
+</div>
+
+<script>
+  // LocalStorage keys
+  const usersKey = 'bot-hosting-users';
+  const ratingsKey = 'bot-hosting-ratings';
+
+  // Load data from localStorage or empty objects
+  let users = JSON.parse(localStorage.getItem(usersKey)) || {};
+  let ratings = JSON.parse(localStorage.getItem(ratingsKey)) || [];
+
+  // Current logged-in user
+  let currentUser = null;
+
+  // DOM elements
+  const inviteSection = document.getElementById('invite-section');
+  const authSection = document.getElementById('auth-section');
+  const profileSection = document.getElementById('profile-section');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const btnRegister = document.getElementById('btn-register');
+  const btnLogin = document.getElementById('btn-login');
+  const authMsg = document.getElementById('auth-msg');
+  const btnLogout = document.getElementById('btn-logout');
+  const avgRatingElem = document.getElementById('avg-rating');
+  const numRatingsElem = document.getElementById('num-ratings');
+  const ratingStars = document.querySelectorAll('.star');
+  const btnSubmitRating = document.getElementById('btn-submit-rating');
+  const ratingMsg = document.getElementById('rating-msg');
+  const reviewsContainer = document.getElementById('reviews');
+  const reviewText = document.getElementById('review-text');
+
+  let selectedRating = 0;
+
+  // --- ฟังก์ชันช่วยเหลือ ---
+
+  // คำนวณคะแนนเฉลี่ย
+  function calculateAverageRating() {
+    if (ratings.length === 0) return 0;
+    const sum = ratings.reduce((acc, r) => acc + r.score, 0);
+    return (sum / ratings.length).toFixed(2);
+  }
+
+  // แสดงคะแนนเฉลี่ยและจำนวนคนโหวต
+  function showAverageRating() {
+    avgRatingElem.textContent = calculateAverageRating();
+    numRatingsElem.textContent = ratings.length;
+  }
+
+  // แสดงรีวิวทั้งหมด
+  function showReviews() {
+    if (ratings.length === 0) {
+      reviewsContainer.textContent = "ยังไม่มีรีวิว";
+      return;
+    }
+    reviewsContainer.innerHTML = '';
+    ratings.slice().reverse().forEach(({ user, score, review }) => {
+      const p = document.createElement('p');
+      p.innerHTML = `<strong>${escapeHtml(user)}</strong> ให้คะแนน ${score} / 5<br>${escapeHtml(review || '')}`;
+      reviewsContainer.appendChild(p);
+    });
+  }
+
+  // ฟังก์ชันป้องกัน XSS ง่ายๆ
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>"']/g, (match) => {
+      return ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[match];
+    });
+  }
+
+  // แสดงสถานะข้อความ
+  function showMsg(elem, msg, isError = false) {
+    elem.textContent = msg;
+    elem.style.color = isError ? 'tomato' : '#8f94fb';
+  }
+
+  // --- หน้าแรก: เมื่อกดปุ่มเชิญบอท ---
+  document.getElementById('btn-invite').addEventListener('click', e => {
+    e.preventDefault();
+    // ซ่อนหน้าเชิญบอท
+    inviteSection.classList.add('hidden');
+    // แสดงหน้า Auth (สมัคร/เข้าสู่ระบบ)
+    authSection.classList.remove('hidden');
+    authMsg.textContent = '';
+  });
+
+  // --- สมัครสมาชิก ---
+  btnRegister.addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!username || !password) {
+      showMsg(authMsg, 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน', true);
+      return;
+    }
+    if (users[username]) {
+      showMsg(authMsg, 'ชื่อผู้ใช้นี้มีอยู่แล้ว');
+      return;
+    }
+    // บันทึกผู้ใช้ใหม่
+    users[username] = { password };
+    localStorage.setItem(usersKey, JSON.stringify(users));
+    showMsg(authMsg, 'สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ');
+  });
+
+  // --- เข้าสู่ระบบ ---
+  btnLogin.addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!username || !password) {
+      showMsg(authMsg, 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน', true);
+      return;
+    }
+    if (!users[username]) {
+      showMsg(authMsg, 'ไม่มีชื่อผู้ใช้นี้ในระบบ', true);
+      return;
+    }
+    if (users[username].password !== password) {
+      showMsg(authMsg, 'รหัสผ่านไม่ถูกต้อง', true);
+      return;
+    }
+    currentUser = username;
+    // ไปหน้าโปรไฟล์
+    authSection.classList.add('hidden');
+    showProfileSection();
+  });
+
+  // --- แสดงหน้าโปรไฟล์และระบบให้คะแนน ---
+  function showProfileSection() {
+    profileSection.classList.remove('hidden');
+    usernameInput.value = '';
+    passwordInput.value = '';
+    ratingMsg.textContent = '';
+    selectedRating = 0;
+    updateStars();
+    showAverageRating();
+    showReviews();
+  }
+
+  // --- ระบบให้คะแนน ---
+  ratingStars.forEach(star => {
+    star.addEventListener('mouseenter', () => {
+      const starValue = Number(star.dataset.star);
+      highlightStars(starValue);
+    });
+    star.addEventListener('mouseleave', () => {
+      highlightStars(selectedRating);
+    });
+    star.addEventListener('click', () => {
+      selectedRating = Number(star.dataset.star);
+      highlightStars(selectedRating);
+    });
+  });
+
+  function highlightStars(num) {
+    ratingStars.forEach(star => {
+      const val = Number(star.dataset.star);
+      if (val <= num) {
+        star.classList.add('hovered');
+      } else {
+        star.classList.remove('hovered');
+      }
+    });
+  }
+  function updateStars() {
+    ratingStars.forEach(star => {
+      const val = Number(star.dataset.star);
+      if (val <= selectedRating) {
+        star.classList.add('selected');
+      } else {
+        star.classList.remove('selected');
+      }
+      star.classList.remove('hovered');
+    });
+  }
+
+  btnSubmitRating.addEventListener('click', () => {
+    if (!currentUser) {
+      showMsg(ratingMsg, 'กรุณาเข้าสู่ระบบก่อนให้คะแนน', true);
+      return;
+    }
+    if (selectedRating === 0) {
+      showMsg(ratingMsg, 'กรุณาเลือกคะแนนก่อน', true);
+      return;
+    }
+    const review = reviewText.value.trim();
+
+    // เช็คว่าผู้ใช้โหวตแล้วหรือยัง
+    const alreadyVotedIndex = ratings.findIndex(r => r.user === currentUser);
+    if (alreadyVotedIndex >= 0) {
+      // อัปเดตคะแนนและรีวิว
+      ratings[alreadyVotedIndex] = { user: currentUser, score: selectedRating, review };
+      showMsg(ratingMsg, 'อัปเดตคะแนนและรีวิวของคุณเรียบร้อยแล้ว');
+    } else {
+      // เพิ่มคะแนนใหม่
+      ratings.push({ user: currentUser, score: selectedRating, review });
+      showMsg(ratingMsg, 'ขอบคุณสำหรับการให้คะแนนและรีวิว');
+    }
+    // บันทึกลง localStorage
+    localStorage.setItem(ratingsKey, JSON.stringify(ratings));
+    showAverageRating();
+    showReviews();
+
+    // รีเซ็ตช่องรีวิวและคะแนน
+    selectedRating = 0;
+    updateStars();
+    reviewText.value = '';
+  });
+
+  // --- ออกจากระบบ ---
+  btnLogout.addEventListener('click', () => {
+    currentUser = null;
+    profileSection.classList.add('hidden');
+    inviteSection.classList.remove('hidden');
+  });
+</script>
+
+</body>
+</html>
